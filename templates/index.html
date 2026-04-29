@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Spam Guardian - Advanced Threat Detection</title>
+    <meta name="description" content="AI-Powered SMS & Email Threat Detection System">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest"></script>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="gradient-bg"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    
+    <div class="container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="nav-content">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <i data-lucide="shield-alert"></i>
+                    </div>
+                    <h1 class="brand-name">Spam Guardian</h1>
+                </div>
+                <div class="nav-badge">
+                    <span class="badge-dot"></span>
+                    <span class="badge-text">AI-Powered Detection</span>
+                </div>
+            </div>
+        </nav>
+
+        {% if error %}
+        <div class="error-alert fadeIn">
+            <div class="alert-content">
+                <i data-lucide="alert-circle" class="alert-icon"></i>
+                <div class="alert-message">
+                    <h3>⚠️ System Alert</h3>
+                    <p>{{ error }}</p>
+                    <p class="alert-hint">📂 Solution: Place your <code>spam.csv</code> file in the project directory or at <code>C:\Users\Fofan\Downloads\archive\spam.csv</code></p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Input Section -->
+            <div class="input-card fadeIn">
+                <div class="card-header">
+                    <div class="header-icon">
+                        <i data-lucide="zap"></i>
+                    </div>
+                    <div class="header-text">
+                        <h2>Analyze Your Message</h2>
+                        <p>Paste any message to detect if it's spam or safe</p>
+                    </div>
+                </div>
+
+                <form id="predict-form" class="predict-form">
+                    <div class="textarea-wrapper">
+                        <textarea 
+                            id="message-input" 
+                            placeholder="Enter your message here... (min 5 characters)" 
+                            rows="5"
+                            class="message-textarea"
+                            autocomplete="off"
+                            required
+                        ></textarea>
+                        <div class="char-counter">
+                            <span id="char-count">0</span>/<span>5000</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="submit-btn">
+                        <span class="btn-text">Scan Message</span>
+                        <i data-lucide="send" class="btn-icon"></i>
+                    </button>
+                </form>
+
+                <!-- Result Display -->
+                <div id="result-container" class="result-container hidden">
+                    <div class="result-content" id="result-content">
+                        <div class="result-indicator">
+                            <div id="result-icon-circle" class="icon-circle">
+                                <i id="result-icon" data-lucide="check-circle"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="result-info">
+                            <h3 id="result-label" class="result-label">Safe Message</h3>
+                            <p id="result-description" class="result-description">This message appears to be legitimate.</p>
+                        </div>
+
+                        <div class="confidence-section">
+                            <div class="confidence-header">
+                                <span class="confidence-label">Detection Confidence</span>
+                                <span id="confidence-percentage" class="confidence-value">0%</span>
+                            </div>
+                            <div class="confidence-bar">
+                                <div id="confidence-fill" class="confidence-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Dashboard -->
+            <div class="dashboard-grid">
+                <!-- Stats Cards -->
+                <div class="stats-section fadeIn" style="animation-delay: 0.1s">
+                    <div class="stat-card stat-accuracy">
+                        <div class="stat-icon">
+                            <i data-lucide="target"></i>
+                        </div>
+                        <div class="stat-data">
+                            <span class="stat-label">Accuracy</span>
+                            <span class="stat-number" id="accuracy-stat">--</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card stat-messages">
+                        <div class="stat-icon">
+                            <i data-lucide="database"></i>
+                        </div>
+                        <div class="stat-data">
+                            <span class="stat-label">Total Messages</span>
+                            <span class="stat-number" id="total-messages-stat">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Section -->
+                <div class="chart-section fadeIn" style="animation-delay: 0.2s">
+                    <div class="section-header">
+                        <h3>Dataset Distribution</h3>
+                        <p class="section-description">Training data breakdown</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Insights Section -->
+                <div class="insights-section fadeIn" style="animation-delay: 0.3s">
+                    <div class="section-header">
+                        <h3>Message Insights</h3>
+                        <p class="section-description">Pattern analysis</p>
+                    </div>
+                    
+                    <div class="insights-grid">
+                        <div class="insight-item safe-insight">
+                            <div class="insight-icon">
+                                <i data-lucide="mail"></i>
+                            </div>
+                            <div class="insight-data">
+                                <span class="insight-title">Safe Messages</span>
+                                <span class="insight-value" id="stat-ham-len">-- chars</span>
+                                <span class="insight-subtext">Average length</span>
+                            </div>
+                        </div>
+
+                        <div class="insight-item spam-insight">
+                            <div class="insight-icon">
+                                <i data-lucide="activity"></i>
+                            </div>
+                            <div class="insight-data">
+                                <span class="insight-title">Spam Messages</span>
+                                <span class="insight-value" id="stat-spam-len">-- chars</span>
+                                <span class="insight-subtext">Average length</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="insight-note">
+                        <p>💡 Spam messages tend to be longer and contain urgent calls-to-action or suspicious links.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Built with <span class="heart">❤️</span> using Flask, Scikit-Learn & Chart.js</p>
+            <div class="footer-links">
+                <a href="#" class="footer-link">Privacy</a>
+                <span class="separator">•</span>
+                <a href="#" class="footer-link">About</a>
+            </div>
+        </footer>
+    </div>
+
+    <script src="./static/app.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
